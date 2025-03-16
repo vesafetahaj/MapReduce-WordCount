@@ -1,0 +1,3 @@
+Hello world!
+Hello Hadoop, welcome to Big Data.
+Hadoop is powerful. Big Data is the future.
