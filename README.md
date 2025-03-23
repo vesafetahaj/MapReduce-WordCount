@@ -24,30 +24,45 @@ The simulation is in three main phases of MapReduce:
 
 ![mapreduce design drawio](https://github.com/user-attachments/assets/9122b47f-6330-4a42-a3fe-805ea225db22)
 
-1. mapper.py
-Reads lines from standard input (stdin)
-Splits each line into words
-Emits output in the form: word 1
+This diagram illustrates how the MapReduce WordCount process works:
 
-Example line output: 
-hello    1
-world    1
+**Input Split:** Each line of the input text is sent to a separate mapper instance.
 
-2. PowerShell Pipeline
-In the terminal, the pipeline does the following:
-Get-Content ../data/input.txt | py mapper.py | Sort-Object | py reducer.py > final_output.txt
+**Map Phase:** Mappers emit key-value pairs like word → 1 for every word.
 
-- Get-Content: Reads each line of the input file
-- py mapper.py: Emits key-value pairs (word\t1)
-- Sort-Object: Groups identical keys together, like Hadoop's shuffle/sort phase
-- py reducer.py: Aggregates counts for each word
+**Shuffle & Sort:** Key-value pairs are grouped and sorted by word.
 
-Output is redirected to final_output.txt
+**Reduce Phase:** Reducers sum the counts for each word.
 
-3. reducer.py
-Reads sorted word\t1 lines
-Sums counts for identical words
-Emits final word\tcount line
+**Final Output:** A list of words and their total occurrences is produced.
+
+---
+
+## 🧮 Complexity Analysis
+
+#### ⏱️ Time Complexity
+
+| **Phase**          | **Operation**                         | **Time Complexity** |
+|--------------------|----------------------------------------|---------------------|
+| **Map**            | Tokenize and emit `word → 1` pairs     | `O(N)`              |
+| **Shuffle & Sort** | Group and sort intermediate pairs      | `O(N log N)`        |
+| **Reduce**         | Aggregate values for each word         | `O(N)`              |
+| **Total**          | *(dominated by shuffle/sort phase)*    | `O(N log N)`        |
+
+- `N` = total number of words  
+- `M` = number of unique words
+
+---
+
+#### 💾 Space Complexity
+
+
+| **Phase**          | **Memory Usage**                          | **Space Complexity** |
+|--------------------|-------------------------------------------|----------------------|
+| **Map Output**     | Store all intermediate `word → 1` pairs   | `O(N)`               |
+| **Shuffle Buffer** | Hold grouped data before reducing         | `O(N)`               |
+| **Reduce Output**  | Store final count for each unique word    | `O(M)`               |
+| **Total**          |                                           | `O(N + M)`           |
 
 ---
 
