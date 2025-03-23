@@ -29,7 +29,7 @@ Reads lines from standard input (stdin)
 Splits each line into words
 Emits output in the form: word 1
 
-# Example line output: 
+Example line output: 
 hello    1
 world    1
 
@@ -81,12 +81,12 @@ Get-Content final_output.txt
 
 ## 📂 Output Example
 
-input.txt
+**input.txt**
 
 hello world
 hello again
 
-final_output.txt
+**final_output.txt**
 
 again    1
 hello    2
