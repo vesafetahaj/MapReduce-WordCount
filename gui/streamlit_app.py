@@ -125,7 +125,7 @@ elif page == "📋 Word Table":
             </style>
         """, unsafe_allow_html=True)
 
-        table_html = filtered_df.head(50).to_html(classes='custom-table', index=False, escape=False)
+        table_html = filtered_df.to_html(classes='custom-table', index=False, escape=False)
         st.markdown(table_html, unsafe_allow_html=True)
     else:
         st.warning("⚠️ No data available. Please go to the Input page and run the MapReduce process first.")
