@@ -15,7 +15,7 @@ def main():
         mapped.extend(mapper.map(line))
 
     # Write mapped output (optional)
-    with open('mapped_output.txt', 'w') as f:
+    with open('../data/mapped_output.txt', 'w') as f:
         for word, count in mapped:
             f.write(f"{word}\t{count}\n")
 
@@ -24,7 +24,7 @@ def main():
     reduced = reducer.reduce(grouped)
 
     # Write final output
-    with open('final_output2.txt', 'w') as f:
+    with open('../data/final_output2.txt', 'w') as f:
         for word in sorted(reduced):
             f.write(f"{word}: {reduced[word]}\n")
 
