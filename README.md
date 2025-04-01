@@ -2,6 +2,8 @@
 
 A simple yet powerful implementation of the classic **Word Count** problem using the **MapReduce programming model** written in **Python**. This project illustrates how distributed computing principles can be applied to process large volumes of textual data.
 
+---
+
 ## 📚 Description
 
 The **WordCount** algorithm counts how many times each word appears in a given text file. This implementation simulates the MapReduce paradigm using Python scripts to represent the `Mapper`, `Reducer`, and the logic that brings them together, mimicking how Hadoop would process jobs in a distributed fashion.
@@ -12,7 +14,6 @@ The simulation is in three main phases of MapReduce:
 2. **Shuffle & Sort**: Sort the key-value pairs by key.
 3. **Reduce**: Aggregate values associated with each key.
 
----
 
 ## 🏗️ Architecture Overview
 
@@ -56,7 +57,6 @@ This diagram illustrates how the MapReduce WordCount process works:
 
 #### 💾 Space Complexity
 
-
 | **Phase**          | **Memory Usage**                          | **Space Complexity** |
 |--------------------|-------------------------------------------|----------------------|
 | **Map Output**     | Store all intermediate `word → 1` pairs   | `O(N)`               |
@@ -72,40 +72,72 @@ This diagram illustrates how the MapReduce WordCount process works:
 - PyCharm IDE (optional but recommended)
 
 You can install the necessary Python version via:
-  sudo apt update
-  sudo apt install python3
+```bash
+sudo apt update
+sudo apt install python3
+```
+
+To install GUI dependencies:
+```bash
+pip install -r requirements.txt
+```
+---
+
+## 🖥️ GUI Mode
+
+The project includes a beautiful, interactive **Streamlit-based GUI** for a user-friendly experience:
+
+### ✨ Features:
+- **📥 Input Page**: Upload `.txt` files or manually input text.
+- **📋 Word Table Page**:
+  - Live search functionality
+  - Styled and scrollable results table
+- **📊 Charts Page**:
+  - Bar chart, Pie chart, Horizontal bar chart
+  - Execution time analysis chart
+- **📤 Download Page**:
+  - Export results as CSV
+  - Preview top 10 words before download
+
+### 🎨 Interface Design:
+- Dark burgundy themed UI with smooth hover effects 
+- Navigation with icon-labeled items
+- Responsive layout designed with user experience in mind
+
 
 ---
 
-## 🚀 How to Run (PyCharm Terminal)
-1. Clone the Repository
+## 🚀 How to Run
+
+### ▶️ CLI Mode (via PyCharm terminal or PowerShell)
+```bash
 git clone https://github.com/vesafetahaj/MapReduce-WordCount.git
 cd MapReduce-WordCount
+Get-Content data/input.txt | py src/mapper.py | Sort-Object | py src/reducer.py > final_output.txt
+```
 
-2. Ensure your input file exists:
-../data/input.txt
-You can edit the file path if needed.
-
-3. Run the MapReduce pipeline inside the PyCharm terminal:
-Get-Content ../data/input.txt | py mapper.py | Sort-Object | py reducer.py > final_output.txt
-
-4. Check results:
-Get-Content final_output.txt
+### ▶️ GUI Mode
+```bash
+cd gui
+streamlit run gui_app.py
+```
 
 ---
 
 ## 📂 Output Example
 
 **input.txt**
-
+```
 hello world
 hello again
+```
 
 **final_output.txt**
-
+```
 again    1
 hello    2
 world    1
+```
 
 ---
 
@@ -113,4 +145,5 @@ world    1
 
 1. Understand the structure of a MapReduce pipeline
 2. Practice basic stream processing in Python
-3. Simulate real-world big data tools using simple components
+3. Build a modern frontend to visualize distributed data logic
+4. Learn to integrate CLI and GUI views of the same data pipeline
