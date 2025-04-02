@@ -14,16 +14,18 @@ def main():
     for line in lines:
         mapped.extend(mapper.map(line))
 
-    # Write mapped output (optional)
+    # Optional: Write raw mapped output for inspection
     with open('../data/mapped_output.txt', 'w') as f:
         for word, count in mapped:
             f.write(f"{word}\t{count}\n")
 
-    # Shuffle and reduce
+    # Shuffle and sort phase
     grouped = reducer.shuffle_and_sort(mapped)
+
+    # Reduce phase
     reduced = reducer.reduce(grouped)
 
-    # Write final output
+    # Save the final output
     with open('../data/final_output2.txt', 'w') as f:
         for word in sorted(reduced):
             f.write(f"{word}: {reduced[word]}\n")

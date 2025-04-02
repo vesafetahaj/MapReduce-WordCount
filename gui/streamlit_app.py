@@ -1,22 +1,21 @@
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import time
-from io import StringIO
-import base64
-import os, sys
-import nltk
-from nltk.corpus import stopwords
+# === IMPORTS ===
+import streamlit as st  # Web UI framework
+import pandas as pd  # Data processing
+import matplotlib.pyplot as plt  # Basic charting
+import seaborn as sns  # Modern plotting
+import time  # Timer for performance tracking
+import base64  # For download functionality
+import os, sys  # File path & system utilities
+import nltk  # Natural Language Toolkit for stopwords
+from nltk.corpus import stopwords  # Stopwords list
 
-# Download stopwords if not already
+# === INITIAL SETUP ===
 nltk.download("stopwords")
 stop_words = set(stopwords.words("english"))
 
-# MUST BE FIRST: Set page config
-st.set_page_config(page_title="MapReduce Word Count", layout="wide")
+st.set_page_config(page_title="MapReduce Word Count", layout="wide")  # App layout config
 
-# Custom CSS for a beautiful, combined color scheme
+# === PAGE STYLING ===
 st.markdown("""
     <style>
         .stApp {
@@ -40,25 +39,26 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# === PATHS FOR CUSTOM MODULES ===
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.mapper import WordCountMapper
 from src.reducer import WordCountReducer
 
+# === SESSION STATE INIT ===
 if "df" not in st.session_state:
     st.session_state.df = pd.DataFrame()
 if "times" not in st.session_state:
     st.session_state.times = []
 
+# === NAVIGATION ===
 page = st.sidebar.selectbox("📑 Navigate", [
-    "📥 Input",
-    "📋 Word Table",
-    "📊 Charts",
-    "📤 Download"
+    "📥 Input", "📋 Word Table", "📊 Charts", "📤 Download"
 ])
 
+# === PAGE: INPUT ===
 if page == "📥 Input":
     st.title("📥 Upload or Enter Text")
-    st.write("Use this page to upload .txt files or paste your text. The MapReduce process will count the frequency of words (excluding common stopwords).")
+    st.write("Use this page to upload .txt files or paste your text. The MapReduce process will count the frequency of words.")
 
     uploaded_files = st.file_uploader("Upload .txt file(s)", type=["txt"], accept_multiple_files=True)
     manual_text = st.text_area("Or paste your text here:", height=150)
@@ -74,12 +74,14 @@ if page == "📥 Input":
     if text_lines and st.button("🚀 Run MapReduce"):
         start_time = time.time()
 
+        # MapReduce pipeline
         mapper = WordCountMapper()
         reducer = WordCountReducer()
         mapped = [pair for line in text_lines for pair in mapper.map(line)]
         grouped = reducer.shuffle_and_sort(mapped)
         reduced = reducer.reduce(grouped)
 
+        # Filter out stopwords
         reduced = {w: c for w, c in reduced.items() if w.lower() not in stop_words}
 
         df = pd.DataFrame(list(reduced.items()), columns=["Word", "Frequency"]).sort_values(by="Frequency", ascending=False)
@@ -89,12 +91,16 @@ if page == "📥 Input":
         st.session_state.times.append(elapsed_time)
         st.success(f"✅ Processed in {elapsed_time} seconds! Use the sidebar to view results.")
 
+# === PAGE: WORD TABLE ===
 elif page == "📋 Word Table":
     st.title("📋 Word Frequency Table")
+
     if not st.session_state.df.empty:
         search_query = st.text_input("🔍 Search for a word")
 
-        filtered_df = st.session_state.df[st.session_state.df["Word"].str.contains(search_query, case=False, na=False)] if search_query else st.session_state.df
+        filtered_df = st.session_state.df[
+            st.session_state.df["Word"].str.contains(search_query, case=False, na=False)
+        ] if search_query else st.session_state.df
 
         st.markdown("""
             <style>
@@ -130,31 +136,33 @@ elif page == "📋 Word Table":
     else:
         st.warning("⚠️ No data available. Please go to the Input page and run the MapReduce process first.")
 
+# === PAGE: CHARTS ===
 elif page == "📊 Charts":
     st.title("📊 Visual Charts")
+
     if not st.session_state.df.empty:
         df = st.session_state.df
-        st.subheader("Top 10 Words")
         top10 = df.head(10)
 
-        # Bar chart
+        # Bar Chart
         fig1, ax1 = plt.subplots(figsize=(10, 5))
         sns.barplot(data=top10, x="Word", y="Frequency", palette="Reds", ax=ax1)
         ax1.set_title("Top 10 Most Frequent Words - Bar Chart")
         st.pyplot(fig1)
 
-        # Pie chart
+        # Pie Chart
         fig2, ax2 = plt.subplots()
         ax2.pie(top10["Frequency"], labels=top10["Word"], autopct="%1.1f%%", startangle=140, colors=sns.color_palette("Reds", n_colors=10))
         ax2.axis("equal")
         st.pyplot(fig2)
 
-        # Horizontal bar chart
+        # Horizontal Bar Chart
         fig3, ax3 = plt.subplots(figsize=(10, 6))
         sns.barplot(data=top10, y="Word", x="Frequency", palette="Reds", ax=ax3)
         ax3.set_title("Top 10 Most Frequent Words - Horizontal Bar")
         st.pyplot(fig3)
 
+        # Execution Time Line Chart
         if st.session_state.times:
             st.subheader("⏱️ Execution Time per Run")
             time_df = pd.DataFrame({
@@ -168,12 +176,20 @@ elif page == "📊 Charts":
     else:
         st.warning("⚠️ No data available. Please run the MapReduce process first.")
 
+# === PAGE: DOWNLOAD ===
 elif page == "📤 Download":
     st.title("📤 Export Results")
+
     if not st.session_state.df.empty:
         csv_data = st.session_state.df.to_csv(index=False)
         b64 = base64.b64encode(csv_data.encode()).decode()
-        download_link = f'<a href="data:file/csv;base64,{b64}" download="word_frequencies.csv" style="font-size:18px;color:#FDF6E3;background:#117864;padding:10px 20px;border-radius:5px;text-decoration:none;">📄 Click to Download CSV</a>'
+
+        download_link = f'''
+        <a href="data:file/csv;base64,{b64}" download="word_frequencies.csv"
+           style="font-size:18px; color:#FDF6E3; background:#117864;
+                  padding:10px 20px; border-radius:5px; text-decoration:none;">
+           📄 Click to Download CSV
+        </a>'''
 
         st.markdown("### Your data is ready! 🎉")
         st.markdown("Use the button below to download your results as a CSV file.")
