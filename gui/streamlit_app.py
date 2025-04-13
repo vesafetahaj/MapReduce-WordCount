@@ -6,33 +6,44 @@ import seaborn as sns
 import time
 import base64
 import os, sys
-import nltk
-from nltk.corpus import stopwords
 from concurrent.futures import ThreadPoolExecutor
 
 # === INITIAL SETUP ===
-nltk.download("stopwords")
-stop_words = set(stopwords.words("english"))
-
 st.set_page_config(page_title="MapReduce Word Count", layout="wide")
 
 
 def parallel_map_combine(lines, mapper, max_workers=4):
     results = []
+
+    # Use a thread pool to process lines in parallel
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Each thread maps and combines a single line
         futures = [executor.submit(lambda line: mapper.combine(mapper.map(line)), line) for line in lines]
+
+        # Collect and flatten results from all threads
         for future in futures:
             results.extend(future.result())
+
     return results
 
 
-def mapreduce_with_parallel_combiner(lines, stop_words):
+
+def mapreduce_with_parallel_combiner(lines):
+    # Instantiate Mapper and Reducer
     mapper = WordCountMapper()
     reducer = WordCountReducer()
+
+    # Run parallel map + local combine phase
     mapped_combined = parallel_map_combine(lines, mapper)
+
+    # Shuffle and group words
     grouped = reducer.shuffle_and_sort(mapped_combined)
+
+    # Reduce and sum counts for each word
     reduced = reducer.reduce(grouped)
-    return {w: c for w, c in reduced.items() if w not in stop_words}
+
+    return reduced
+
 
 
 # === PAGE STYLING ===
@@ -96,7 +107,7 @@ if page == "📥 Input":
 
         mapper = WordCountMapper()
         reducer = WordCountReducer()
-        reduced = mapreduce_with_parallel_combiner(text_lines, stop_words)
+        reduced = mapreduce_with_parallel_combiner(text_lines)
 
 
         df = pd.DataFrame(list(reduced.items()), columns=["Word", "Frequency"]).sort_values(by="Frequency", ascending=False)
