@@ -14,7 +14,16 @@ The simulation is in three main phases of MapReduce:
 2. **Shuffle & Sort**: Sort the key-value pairs by key.
 3. **Reduce**: Aggregate values associated with each key.
 
+---
 
+## 🎯 Learning Goals
+
+1. Understand the structure of a MapReduce pipeline
+2. Practice basic stream processing in Python
+3. Build a modern frontend to visualize distributed data logic
+4. Learn to integrate CLI and GUI views of the same data pipeline
+
+---
 ## 🏗️ Architecture Overview
 
 ![image](https://github.com/user-attachments/assets/0f8f6b56-6a2f-4867-a20a-cd7c0a3b7bd7)
@@ -141,9 +150,24 @@ world    1
 
 ---
 
-## 🎯 Learning Goals
+## ✅ Testing & Validation
 
-1. Understand the structure of a MapReduce pipeline
-2. Practice basic stream processing in Python
-3. Build a modern frontend to visualize distributed data logic
-4. Learn to integrate CLI and GUI views of the same data pipeline
+This project includes unit tests to ensure the correctness of the core logic for both the **Mapper** and **Reducer** components.  
+Testing is performed using Python's built-in `unittest` framework.
+
+---
+
+### 🧪 What Was Tested?
+
+| **Component** | **Description**                            | **Covered Scenarios**                                                                 |
+|---------------|--------------------------------------------|----------------------------------------------------------------------------------------|
+| **Mapper**    | Converts lines of text to `(word, 1)` pairs | - Basic line mapping  <br> - Case insensitivity <br> - Handling extra spaces           |
+| **Reducer**   | Groups and sums mapped words                | - Grouping words after shuffle <br> - Accurate count reduction for each unique word    |
+
+---
+
+You can run all tests from the command line using:
+
+```bash
+python -m unittest discover -s tests
+
