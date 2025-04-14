@@ -37,6 +37,10 @@ This diagram illustrates how the MapReduce WordCount process works:
 
 **Final Output:** A list of words and their total occurrences is produced.
 
+### With combiner for optimization:
+![image](https://github.com/user-attachments/assets/270d7f19-c2ee-4806-a6f7-c39d7a211e12)
+
+
 ---
 
 ## 🧮 Complexity Analysis
